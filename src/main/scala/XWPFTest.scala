@@ -28,19 +28,26 @@ object XWPFTest
     //    val uri = getClass.getResource(resourcePath).toURI
     //    println(uri)
     val templatePath = Paths.get(resourcePath)
-    var doc = new XWPFDocument(Files.newInputStream(templatePath))
+    val doc = new XWPFDocument(Files.newInputStream(templatePath))
+    val compiledDoc = XWPFTemplate.compile(doc)
     val vars = Map[String, String]("client_lastname" -> "Фамилия", "client_firstname" -> "Имя", "client_middlename" -> "Отч")
-        val modDoc = XWPFTemplate.compile(doc).render(vars.asJava).getXWPFDocument
+        val modDoc = compiledDoc.render(vars.asJava).getXWPFDocument
 
     val options = PdfOptions.create
     val out = new FileOutputStream("t4_out.pdf")
+    val out2 = new FileOutputStream("t42_out.pdf")
 //    val byteOut = new ByteArrayOutputStream()
     PdfConverter.getInstance.convert(modDoc, out, null)
 //    PdfConverter.getInstance.convert(modDoc, byteOut, null)
+    val vars2 = Map[String, String]("client_lastname" -> "Фам2", "client_firstname" -> "Имя2", "client_middlename" -> "Отч2")
+    val modDoc2 = compiledDoc.render(vars2.asJava).getXWPFDocument
+    PdfConverter.getInstance.convert(modDoc2, out2, null)
 
 //    println(s"size of buffer is ${byteOut.size}")
+    modDoc2.close()
     modDoc.close()
     out.close()
+    out2.close()
 
   }
 }
